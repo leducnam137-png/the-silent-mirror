@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Nam Hải Oracle v10.0 – The Final Masterpiece</title>
+    <title>Nam Hải Oracle v10.1 – Legal & Soul</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         :root { --gold: #ffcc00; --bg: #0a0a0a; --card-bg: #161616; --text: #eee; }
@@ -12,6 +12,8 @@
         p.sub { font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5; }
         input, select, button, textarea { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: none; font-size: 16px; background: #1a1a1a; color: #fff; box-sizing: border-box; }
         textarea { height: 100px; border: 1px solid #333; resize: none; -webkit-user-select: auto; user-select: auto; outline: none; }
+        .check-group { text-align: left; font-size: 13px; color: #888; margin: 10px 0; display: flex; align-items: flex-start; gap: 8px; }
+        .check-group input { width: auto; margin: 3px 0 0 0; cursor: pointer; }
         button { background: var(--gold); color: #000; font-weight: bold; cursor: pointer; transition: 0.3s; }
         button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,204,0,0.2); }
         .result-card { border: 1px solid #222; border-radius: 20px; background: var(--card-bg); padding: 20px; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.7); animation: fadeIn 0.6s ease; }
@@ -36,12 +38,19 @@
     </div>
 
     <div id="setup-zone">
-        <input id="userName" placeholder="Tên/Danh tính của bạn...">
+        <input id="userName" placeholder="Tên của bạn...">
+        <input id="userBirthday" type="date" placeholder="Ngày sinh">
         <select id="mainTopic">
             <option value="money">TÀI CHÍNH & SỰ NGHIỆP</option>
             <option value="love">TÌNH CẢM & MỐI QUAN HỆ</option>
         </select>
         <textarea id="userStory" placeholder="Vấn đề gì đang bóp nghẹt tâm trí bạn? Hãy giãi bày thật lòng..."></textarea>
+        
+        <div class="check-group">
+            <input type="checkbox" id="ageCheck">
+            <label for="ageCheck">Tôi xác nhận đã trên 18 tuổi và đủ bản lĩnh để đối diện với sự thật cay đắng.</label>
+        </div>
+        
         <button onclick="initDraw()">KHAI MỞ CỬA MỆNH</button>
     </div>
 
@@ -62,13 +71,12 @@
 </div>
 
 <script>
-    // DATA 22 LÁ - NỘI DUNG "VẢ" TÂM LÝ CAO CẤP
     const tarotData = {
-        0: { n:"The Fool", money:{m:"Kế hoạch mới thiếu điểm tựa.", q:"Bạn thực sự thấy cơ hội, hay chỉ đang dùng dự án này để trốn chạy thực tại?", x:"Dũng cảm và liều lĩnh chỉ cách nhau một sợi chỉ: Sự hiểu biết.", a:"Liệt kê 3 rủi ro lớn nhất bạn đang cố lờ đi."}, love:{m:"Khởi đầu cảm xúc nhất thời.", q:"Điều gì khiến bạn tin rằng họ sẽ đi cùng bạn khi giông bão tới?", x:"Sự thật không phải bạn yêu, mà là bạn sợ lẻ bóng.", a:"Tự hỏi: Nếu họ không đổi, bạn có chịu được 1 năm nữa?"} },
+        0: { n:"The Fool", money:{m:"Kế hoạch mới thiếu điểm tựa.", q:"Bạn thực sự thấy cơ hội, hay chỉ đang trốn chạy thực tại?", x:"Dũng cảm và liều lĩnh chỉ cách nhau một sợi chỉ: Sự hiểu biết.", a:"Liệt kê 3 rủi ro lớn nhất bạn đang cố lờ đi."}, love:{m:"Khởi đầu cảm xúc nhất thời.", q:"Điều gì khiến bạn tin rằng họ sẽ đi cùng bạn khi giông bão tới?", x:"Sự thật không phải bạn yêu, mà là bạn sợ lẻ bóng.", a:"Hỏi bản thân: Nếu họ không đổi, bạn có chịu được 1 năm nữa?"} },
         1: { n:"The Magician", money:{m:"Ảo tưởng thực lực.", q:"Bạn có thực tài, hay chỉ giỏi hứa hẹn che đậy sự rỗng tuếch?", x:"Công cụ tốt không làm nên thợ giỏi. Đừng tìm đường tắt.", a:"Học 1 kỹ năng cốt lõi thay vì đi nhờ vả."}, love:{m:"Thao túng cảm xúc.", q:"Bạn yêu họ, hay yêu cảm giác được kiểm soát họ?", x:"Tình yêu không phải trò chơi để phân thắng bại.", a:"Nói một điều thật lòng bạn đã giấu bấy lâu."} },
         2: { n:"The High Priestess", money:{m:"Thụ động trá hình.", q:"Bạn chờ cơ hội, hay đang lười biếng sợ hành động?", x:"Sự im lặng không tạo ra tiền bạc. Nó tạo ra trì trệ.", a:"Làm ngay 1 việc thực tế thay vì ngồi ngẫm."}, love:{m:"Bí mật mục nát.", q:"Im lặng để thấu hiểu, hay để che giấu sự thật?", x:"Sự thật không mất đi, nó tích tụ để nổ tung.", a:"Đối diện với bí mật bạn đang sợ phải nói."} },
         3: { n:"The Empress", money:{m:"Hưởng thụ sớm.", q:"Bạn đang đầu tư cho tương lai, hay đang tiêu tiền để xoa dịu cái tôi?", x:"Nuông chiều bản thân hôm nay là cái bẫy nợ ngày mai.", a:"Cắt giảm 20% chi phí sinh hoạt ngay."}, love:{m:"Bao bọc thái quá.", q:"Bạn là người yêu hay là bảo mẫu của họ?", x:"Bao bọc quá mức giết chết sự trưởng thành.", a:"Ngừng gánh vác trách nhiệm hộ người khác 1 ngày."} },
-        4: { n:"The Emperor", money:{m:"Cứng nhắc lỗi thời.", q:"Bạn đang quản lý công việc, hay đang cố làm bạo chúa?", x:"Kỷ luật thiếu linh hoạt là con đường tới sụp đổ.", a:"Lắng nghe ý kiến của cộng sự bạn vốn không ưa."}, love:{m:"Kiểm soát ngột ngạt.", q:"Bạn cần bạn đời, hay cần một thuộc cấp?", x:"Tình yêu không tồn tại thiếu tự do.", a:"Để đối phương tự quyết định việc quan trọng hôm nay."} },
+        4: { n:"The Emperor", money:{m:"Cứng nhắc lỗi thời.", q:"Bạn quản lý công việc, hay đang cố làm bạo chúa?", x:"Kỷ luật thiếu linh hoạt là con đường tới sụp đổ.", a:"Lắng nghe ý kiến của cộng sự bạn vốn không ưa."}, love:{m:"Kiểm soát ngột ngạt.", q:"Bạn cần bạn đời, hay cần một thuộc cấp?", x:"Tình yêu không tồn tại thiếu tự do.", a:"Để đối phương tự quyết định việc quan trọng hôm nay."} },
         5: { n:"The Hierophant", money:{m:"Lối mòn an toàn.", q:"Bạn đi lối cũ vì nó tốt, hay vì bạn sợ đổi mới?", x:"Nguyên tắc là để bảo vệ, nhưng cũng có thể là rào cản.", a:"Thử 1 cách tiếp cận mới cho vấn đề cũ."}, love:{m:"Yêu theo định kiến.", q:"Bạn yêu vì rung động, hay để vừa lòng xã hội?", x:"Hôn nhân là của bạn, không phải của đám đông.", a:"Thảo luận kế hoạch riêng của hai người."} },
         6: { n:"The Lovers", money:{m:"Phân tâm ngã ba đường.", q:"Bạn chọn đam mê hay chọn tiền bạc?", x:"Không thể chọn cả hai khi chưa đủ thực lực gánh vác.", a:"Chọn 1 mục tiêu duy nhất, bỏ qua dự án phụ."}, love:{m:"Do dự cam kết.", q:"Bạn yêu họ, hay yêu cảm giác được săn đón?", x:"Người chọn tất cả sẽ không có gì trong tay.", a:"Xác định rõ mối quan hệ này là gì ngay."} },
         7: { n:"The Chariot", money:{m:"Tiến bất chấp.", q:"Bạn kiểm soát tình hình, hay đang bị tham vọng kéo đi?", x:"Tốc độ vô nghĩa nếu bạn đi sai hướng.", a:"Dừng lại 1 ngày kiểm tra sơ đồ vận hành."}, love:{m:"Chinh phục ích kỷ.", q:"Bạn muốn yêu, hay chỉ muốn thắng trái tim họ?", x:"Tình yêu không phải là chiến lợi phẩm.", a:"Hỏi đối phương xem họ thực sự cần gì ở bạn."} },
@@ -96,22 +104,23 @@
             const data = JSON.parse(lastSession);
             document.getElementById("welcome-title").innerText = "ĐỐI DIỆN SỰ THẬT, " + data.name.toUpperCase();
             document.getElementById("welcome-sub-box").innerHTML = `
-                <p style="color: #ff6666; font-size: 13px; font-weight: bold; margin: 5px 0;">Bạn vẫn đang mắc kẹt tại: "${data.lastIssue}"</p>
-                <p class="sub">Vòng lặp cũ vẫn còn đó. Bạn chọn bước ra hay tiếp tục lún sâu?</p>`;
+                <p style="color: #ff6666; font-size: 13px; font-weight: bold; margin: 5px 0;">Vết xe cũ: "${data.lastIssue}"</p>
+                <p class="sub">Vũ trụ đang quan sát nỗ lực thoát khỏi vòng lặp của bạn.</p>`;
         }
     };
 
     function initDraw() {
-        // RESET TRẠNG THÁI TRIỆT ĐỂ
-        selectedCards = [];
-        currentStep = 0;
-        userAnswers = [];
-        userActions = [];
+        const ageChecked = document.getElementById("ageCheck").checked;
+        if(!ageChecked) return alert("Bạn cần đủ 18 tuổi để tham gia phiên soi mình này.");
         
         const name = document.getElementById("userName").value.trim();
+        const birthday = document.getElementById("userBirthday").value;
         const story = document.getElementById("userStory").value.trim();
-        if (!name || story.length < 10) return alert("Sự thật cần sự thành tâm giãi bày (tối thiểu 10 ký tự).");
         
+        if (!name || !birthday || story.length < 10) return alert("Vui lòng cung cấp đủ thông tin và tâm sự (tối thiểu 10 ký tự).");
+
+        // RESET TRẠNG THÁI
+        selectedCards = []; currentStep = 0; userAnswers = []; userActions = [];
         document.getElementById("setup-zone").classList.add("hidden");
         document.getElementById("finalZone").classList.add("hidden");
         
@@ -138,10 +147,10 @@
                 <p style="font-size: 15px; margin-bottom:15px;"><b>Tiên sinh:</b> ${data.m}</p>
                 <div class="reflection-box">
                     <span style="color:#00ffcc;font-style:italic;display:block;margin-bottom:8px;"><b>Truy vấn:</b> ${data.q}</span>
-                    <textarea id="ans_${currentStep}" placeholder="Hãy trung thực với chính mình..."></textarea>
+                    <textarea id="ans_${currentStep}" placeholder="Sự thật là..."></textarea>
                 </div>
                 <div id="pierce_${currentStep}" class="hidden"></div>
-                <button id="btn_${currentStep}" onclick="pierceStep()" style="margin-top:15px;">XÁC NHẬN SỰ THẬT</button>
+                <button id="btn_${currentStep}" onclick="pierceStep()" style="margin-top:15px;">XÁC NHẬN</button>
             </div>`;
         window.scrollTo({ top: 0, behavior: 'smooth' });
     }
@@ -149,7 +158,7 @@
     function pierceStep() {
         const inputArea = document.getElementById(`ans_${currentStep}`);
         let val = inputArea.value.trim();
-        if(val.length < 5) return alert("Bạn đang né tránh. Hãy gõ thật lòng câu trả lời.");
+        if(val.length < 5) return alert("Sự hời hợt sẽ không dẫn tới kết quả.");
         
         inputArea.disabled = true;
         inputArea.style.opacity = "0.6";
@@ -158,13 +167,11 @@
         const cardData = tarotData[selectedCards[currentStep]][topic];
         userAnswers.push(val);
         
-        // MULTI-TRIGGER NÂNG CAO (AI GIẢ)
-        let dynamicAct = cardData.a || "Dành 10 phút nhìn thẳng vào vấn đề.";
+        let dynamicAct = cardData.a || "Dành 10 phút suy ngẫm.";
         const lowVal = val.toLowerCase();
-        if(lowVal.includes("sợ")) dynamicAct += " -> Hãy đối diện với nỗi sợ này thay vì chạy trốn.";
-        if(lowVal.includes("mệt")) dynamicAct += " -> Bạn đang kiệt sức, hãy nghỉ ngơi trước khi quyết định.";
-        if(lowVal.includes("tiền")) dynamicAct += " -> Nhìn lại mối quan hệ của bạn với vật chất.";
-        if(lowVal.includes("họ") || lowVal.includes("người đó")) dynamicAct += " -> Bạn đang phụ thuộc vào người khác quá nhiều.";
+        if(lowVal.includes("sợ")) dynamicAct += " (Nỗi sợ này là ảo ảnh, hãy xuyên qua nó)";
+        if(lowVal.includes("mệt") || lowVal.includes("buồn")) dynamicAct += " (Ưu tiên chữa lành tâm trí trước khi làm việc tiếp theo)";
+        if(lowVal.includes("tiền") || lowVal.includes("nợ")) dynamicAct += " (Phải minh bạch hóa con số ngay hôm nay)";
         
         userActions.push(dynamicAct);
 
@@ -173,12 +180,12 @@
         pZone.classList.remove("hidden");
         
         const btn = document.getElementById(`btn_${currentStep}`);
-        btn.innerText = (currentStep < 4) ? "TIẾP TỤC ĐÀO SÂU" : "PHÂN TÍCH TỔNG THỂ...";
+        btn.innerText = (currentStep < 4) ? "TIẾP TỤC ĐÀO SÂU" : "XEM KẾT CỤC...";
         btn.onclick = function() {
             currentStep++;
             if(currentStep < 5) showCard(); 
             else {
-                document.getElementById("drawZone").innerHTML = "<p class='loading-text'>Hệ thống đang giải mã tâm trí bạn...</p>";
+                document.getElementById("drawZone").innerHTML = "<p class='loading-text'>Vũ trụ đang tổng hợp lộ trình của bạn...</p>";
                 setTimeout(() => finalize(), 1200);
             }
         };
@@ -189,17 +196,14 @@
         document.getElementById("finalZone").classList.remove("hidden");
         
         let longestAns = userAnswers.reduce((a, b) => a.length > b.length ? a : b);
-        // Highlight cụm từ chính (Giả định lấy 3 từ đầu)
-        let highlight = longestAns.split(' ').slice(0, 3).join(' ');
-        
         let allText = userAnswers.join(" ").toLowerCase();
-        let s = `LỘ TRÌNH TÂM TRÍ CỦA BẠN:\n\n`;
         
-        if(allText.includes("không biết")) s += "⚠️ CẢNH BÁO: Bạn dùng 'không biết' như một tấm khiên để né tránh thực tại.\n";
+        let s = `BẢN ĐỒ TÂM LINH DÀNH CHO BẠN:\n\n`;
+        if(allText.includes("không biết")) s += "⚠️ LƯU Ý: Bạn có xu hướng trốn tránh khi gặp áp lực (thể hiện qua từ 'không biết').\n";
         
-        s += `🔥 ĐIỂM TỬ HUYỆT: <span style="color:gold; font-weight:bold;">"${longestAns}"</span>\n\n`;
-        s += `📍 KẾT CỤC: Nếu không thay đổi hành động, tương lai của bạn sẽ là sự lặp lại của lá "${tarotData[selectedCards[4]][document.getElementById("mainTopic").value].m}"\n`;
-        s += `\n❗ Nếu bạn không hành động trong 24h tới, mọi nhận thức này sẽ biến mất.`;
+        s += `🔥 ĐIỂM TỬ HUYỆT: <span style="color:gold;">"${longestAns}"</span>\n\n`;
+        s += `📍 KẾT CỤC: Nếu giữ lối mòn, bạn sẽ lặp lại lá "${tarotData[selectedCards[4]][document.getElementById("mainTopic").value].m}"\n`;
+        s += `\n❗ Nhận thức này sẽ phai nhạt sau 24h nếu không được thực thi.`;
 
         document.getElementById("final-analysis").innerHTML = s;
 
@@ -210,32 +214,26 @@
     }
 
     function staySame() {
-        document.getElementById("final-analysis").innerText = "Bạn không thất bại. Bạn chỉ đang chọn lặp lại thất bại cũ một cách có ý thức.";
+        document.getElementById("final-analysis").innerText = "Bạn không thất bại. Bạn chỉ đang chọn lặp lại bài học cũ cho đến khi đủ đau để thay đổi.";
         document.getElementById("decision-fork").classList.add("hidden");
     }
 
     function changePath() {
-        document.getElementById("final-analysis").innerHTML = "<b>LỘ TRÌNH PHÁ VỠ VÒNG LẶP DÀNH RIÊNG CHO BẠN:</b>";
+        document.getElementById("final-analysis").innerHTML = "<b>LỘ TRÌNH PHÁ VỠ VÒNG LẶP:</b>";
         document.getElementById("decision-fork").classList.add("hidden");
         document.getElementById("action-plan").classList.remove("hidden");
         
         const listZone = document.getElementById("action-list");
-        listZone.innerHTML = ""; // FIX BUG RENDER CŨ
+        listZone.innerHTML = "";
         
         userActions.forEach((act, i) => {
-            let label = (i === userActions.length - 1) 
-                ? "🔥 HÀNH ĐỘNG QUYẾT ĐỊNH" 
-                : "🚀 Bước " + (i+1);
-            listZone.innerHTML += `
-            <p style="border-bottom:1px solid #222; padding-bottom:8px;">
-                <b>${label}:</b> ${act}
-            </p>`;
+            let label = (i === userActions.length - 1) ? "🔥 HÀNH ĐỘNG QUYẾT ĐỊNH" : "🚀 Bước " + (i+1);
+            listZone.innerHTML += `<p style="border-bottom:1px solid #222; padding-bottom:8px;"><b>${label}:</b> ${act}</p>`;
         });
 
-        // MOMENT UPSELL (LÁ THỨ 6)
         listZone.innerHTML += `
             <div style="background: gold; color: black; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; font-weight: bold; cursor: pointer; font-size:14px;">
-                MỞ KHÓA LÁ THỨ 6: THỜI ĐIỂM VÀNG (99k)
+                MỞ KHÓA CHI TIẾT TỬ VI KẾT HỢP (99k)
             </div>`;
     }
 </script>
