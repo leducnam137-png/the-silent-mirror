@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Nam Hải Oracle v10.0 – The Final Masterpiece</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        :root { --gold: #ffcc00; --bg: #0a0a0a; --card-bg: #161616; --text: #eee; }
+        body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', sans-serif; text-align: center; padding: 15px; margin: 0; -webkit-user-select: none; user-select: none; }
+        .container { max-width: 500px; margin: auto; }
+        h2 { color: var(--gold); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 5px; text-shadow: 0 0 10px rgba(255,204,0,0.3); }
+        p.sub { font-size: 12px; color: #666; margin-bottom: 20px; line-height: 1.5; }
+        input, select, button, textarea { width: 100%; padding: 15px; margin: 10px 0; border-radius: 12px; border: none; font-size: 16px; background: #1a1a1a; color: #fff; box-sizing: border-box; }
+        textarea { height: 100px; border: 1px solid #333; resize: none; -webkit-user-select: auto; user-select: auto; outline: none; }
+        button { background: var(--gold); color: #000; font-weight: bold; cursor: pointer; transition: 0.3s; }
+        button:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,204,0,0.2); }
+        .result-card { border: 1px solid #222; border-radius: 20px; background: var(--card-bg); padding: 20px; text-align: left; box-shadow: 0 10px 40px rgba(0,0,0,0.7); animation: fadeIn 0.6s ease; }
+        .card-img { width: 140px; display: block; margin: 0 auto 15px; border-radius: 10px; border: 2px solid #333; filter: sepia(0.3); }
+        .reflection-box { background: #000; padding: 15px; border-radius: 12px; border-left: 4px solid var(--gold); margin-top: 15px; }
+        .pierce-box { margin-top: 15px; padding: 15px; background: rgba(255, 204, 0, 0.08); border-radius: 10px; border: 1px dashed var(--gold); animation: slideUp 0.4s ease; }
+        .hidden { display: none; }
+        #final-analysis { white-space: pre-wrap; text-align: left; line-height: 1.8; padding: 20px; background: #000; border-radius: 15px; border: 1px solid #333; margin-top: 20px; color: #f0f0f0; }
+        .btn-half { width: 48%; display: inline-block; font-size: 14px; }
+        .loading-text { color: var(--gold); font-style: italic; margin-top: 50px; animation: pulse 1.5s infinite; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        @keyframes pulse { 0% { opacity: 0.4; } 50% { opacity: 1; } 100% { opacity: 0.4; } }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+<div class="container">
+    <h2 id="welcome-title">NAM HẢI ORACLE</h2>
+    <div id="welcome-sub-box">
+        <p id="welcome-sub" class="sub">Công cụ bóc tách sự thật để khai mở vận mệnh.</p>
+    </div>
+
+    <div id="setup-zone">
+        <input id="userName" placeholder="Tên/Danh tính của bạn...">
+        <select id="mainTopic">
+            <option value="money">TÀI CHÍNH & SỰ NGHIỆP</option>
+            <option value="love">TÌNH CẢM & MỐI QUAN HỆ</option>
+        </select>
+        <textarea id="userStory" placeholder="Vấn đề gì đang bóp nghẹt tâm trí bạn? Hãy giãi bày thật lòng..."></textarea>
+        <button onclick="initDraw()">KHAI MỞ CỬA MỆNH</button>
+    </div>
+
+    <div id="drawZone"></div>
+
+    <div id="finalZone" class="hidden">
+        <div id="final-analysis"></div>
+        <div id="decision-fork" style="margin-top: 20px;">
+            <button class="btn-half" style="background:#222; color:#777;" onclick="staySame()">GIỮ LỐI CŨ</button>
+            <button class="btn-half" onclick="changePath()">THAY ĐỔI NGAY</button>
+        </div>
+        <div id="action-plan" class="hidden" style="margin-top:20px; padding:15px; background:rgba(0,255,204,0.05); border-radius:12px; border: 1px solid #00ffcc;">
+            <p style="color:#00ffcc; font-weight:bold; margin-top:0;">⚡ BẢN ĐỒ HÀNH ĐỘNG 24H:</p>
+            <div id="action-list" style="text-align:left; font-size:14px; line-height: 1.6;"></div>
+            <button onclick="location.reload()" style="background:#333; color:#fff; margin-top:20px; font-size:12px;">KẾT THÚC PHIÊN SOI MÌNH</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // DATA 22 LÁ - NỘI DUNG "VẢ" TÂM LÝ CAO CẤP
+    const tarotData = {
+        0: { n:"The Fool", money:{m:"Kế hoạch mới thiếu điểm tựa.", q:"Bạn thực sự thấy cơ hội, hay chỉ đang dùng dự án này để trốn chạy thực tại?", x:"Dũng cảm và liều lĩnh chỉ cách nhau một sợi chỉ: Sự hiểu biết.", a:"Liệt kê 3 rủi ro lớn nhất bạn đang cố lờ đi."}, love:{m:"Khởi đầu cảm xúc nhất thời.", q:"Điều gì khiến bạn tin rằng họ sẽ đi cùng bạn khi giông bão tới?", x:"Sự thật không phải bạn yêu, mà là bạn sợ lẻ bóng.", a:"Tự hỏi: Nếu họ không đổi, bạn có chịu được 1 năm nữa?"} },
+        1: { n:"The Magician", money:{m:"Ảo tưởng thực lực.", q:"Bạn có thực tài, hay chỉ giỏi hứa hẹn che đậy sự rỗng tuếch?", x:"Công cụ tốt không làm nên thợ giỏi. Đừng tìm đường tắt.", a:"Học 1 kỹ năng cốt lõi thay vì đi nhờ vả."}, love:{m:"Thao túng cảm xúc.", q:"Bạn yêu họ, hay yêu cảm giác được kiểm soát họ?", x:"Tình yêu không phải trò chơi để phân thắng bại.", a:"Nói một điều thật lòng bạn đã giấu bấy lâu."} },
+        2: { n:"The High Priestess", money:{m:"Thụ động trá hình.", q:"Bạn chờ cơ hội, hay đang lười biếng sợ hành động?", x:"Sự im lặng không tạo ra tiền bạc. Nó tạo ra trì trệ.", a:"Làm ngay 1 việc thực tế thay vì ngồi ngẫm."}, love:{m:"Bí mật mục nát.", q:"Im lặng để thấu hiểu, hay để che giấu sự thật?", x:"Sự thật không mất đi, nó tích tụ để nổ tung.", a:"Đối diện với bí mật bạn đang sợ phải nói."} },
+        3: { n:"The Empress", money:{m:"Hưởng thụ sớm.", q:"Bạn đang đầu tư cho tương lai, hay đang tiêu tiền để xoa dịu cái tôi?", x:"Nuông chiều bản thân hôm nay là cái bẫy nợ ngày mai.", a:"Cắt giảm 20% chi phí sinh hoạt ngay."}, love:{m:"Bao bọc thái quá.", q:"Bạn là người yêu hay là bảo mẫu của họ?", x:"Bao bọc quá mức giết chết sự trưởng thành.", a:"Ngừng gánh vác trách nhiệm hộ người khác 1 ngày."} },
+        4: { n:"The Emperor", money:{m:"Cứng nhắc lỗi thời.", q:"Bạn đang quản lý công việc, hay đang cố làm bạo chúa?", x:"Kỷ luật thiếu linh hoạt là con đường tới sụp đổ.", a:"Lắng nghe ý kiến của cộng sự bạn vốn không ưa."}, love:{m:"Kiểm soát ngột ngạt.", q:"Bạn cần bạn đời, hay cần một thuộc cấp?", x:"Tình yêu không tồn tại thiếu tự do.", a:"Để đối phương tự quyết định việc quan trọng hôm nay."} },
+        5: { n:"The Hierophant", money:{m:"Lối mòn an toàn.", q:"Bạn đi lối cũ vì nó tốt, hay vì bạn sợ đổi mới?", x:"Nguyên tắc là để bảo vệ, nhưng cũng có thể là rào cản.", a:"Thử 1 cách tiếp cận mới cho vấn đề cũ."}, love:{m:"Yêu theo định kiến.", q:"Bạn yêu vì rung động, hay để vừa lòng xã hội?", x:"Hôn nhân là của bạn, không phải của đám đông.", a:"Thảo luận kế hoạch riêng của hai người."} },
+        6: { n:"The Lovers", money:{m:"Phân tâm ngã ba đường.", q:"Bạn chọn đam mê hay chọn tiền bạc?", x:"Không thể chọn cả hai khi chưa đủ thực lực gánh vác.", a:"Chọn 1 mục tiêu duy nhất, bỏ qua dự án phụ."}, love:{m:"Do dự cam kết.", q:"Bạn yêu họ, hay yêu cảm giác được săn đón?", x:"Người chọn tất cả sẽ không có gì trong tay.", a:"Xác định rõ mối quan hệ này là gì ngay."} },
+        7: { n:"The Chariot", money:{m:"Tiến bất chấp.", q:"Bạn kiểm soát tình hình, hay đang bị tham vọng kéo đi?", x:"Tốc độ vô nghĩa nếu bạn đi sai hướng.", a:"Dừng lại 1 ngày kiểm tra sơ đồ vận hành."}, love:{m:"Chinh phục ích kỷ.", q:"Bạn muốn yêu, hay chỉ muốn thắng trái tim họ?", x:"Tình yêu không phải là chiến lợi phẩm.", a:"Hỏi đối phương xem họ thực sự cần gì ở bạn."} },
+        8: { n:"Strength", money:{m:"Dùng lực ép buộc.", q:"Bạn đang thuyết phục cộng sự hay đang dùng quyền để ép?", x:"Áp lực quá lớn sẽ làm gãy các mối quan hệ.", a:"Dùng sự mềm mỏng giải quyết xung đột."}, love:{m:"Dồn nén cơn giận.", q:"Bạn đang nhường nhịn, hay đang tích tụ bom nổ chậm?", x:"Dồn nén không phải bao dung, nó là tự hủy.", a:"Nói ra điều bạn không hài lòng một cách nhẹ nhàng."} },
+        9: { n:"The Hermit", money:{m:"Cô độc cực đoan.", q:"Bạn đang tìm hướng đi, hay đang xa rời thị trường?", x:"Kiến thức sách vở không thay thế được thực tế.", a:"Hỏi lời khuyên từ một người đi trước."}, love:{m:"Lạnh lùng xa cách.", q:"Bạn cần không gian riêng, hay đang trốn tránh họ?", x:"Cô đơn trong mối quan hệ là nỗi đau lớn nhất.", a:"Tắt điện thoại trò chuyện cùng họ 1 tiếng."} },
+        10: { n:"Wheel of Fortune", money:{m:"Dựa vào vận may.", q:"Bạn chờ thời, hay đã chuẩn bị cho lúc thời đổi?", x:"Vận may chỉ đến với người đã sẵn sàng túi tiền.", a:"Lập ngay quỹ dự phòng khẩn cấp."}, love:{m:"Bám lấy quá khứ.", q:"Bạn chấp nhận sự đổi thay, hay cố níu kỷ niệm?", x:"Mọi thứ đều xoay chuyển, đừng bám cái đã đi.", a:"Chấp nhận một sự thật phũ phàng hiện tại."} },
+        11: { n:"Justice", money:{m:"Kiếm tiền không minh bạch.", q:"Bạn đang làm giàu, hay đang vay mượn từ tương lai?", x:"Cái giá gian lận luôn đắt hơn số tiền kiếm được.", a:"Kiểm tra lại tính pháp lý mọi dự án."}, love:{m:"Sòng phẳng thiếu tình.", q:"Bạn đang yêu, hay đang cân đo thiệt hơn?", x:"Tình yêu không phải bảng cân đối kế toán.", a:"Làm việc tốt cho họ mà không cần đáp lại."} },
+        12: { n:"The Hanged Man", money:{m:"Hy sinh vô ích.", q:"Bạn đang chờ đợi thời cơ, hay thực chất là bế tắc?", x:"Tầm nhìn mới chỉ đến khi dám nhìn ngược vấn đề.", a:"Đảo ngược góc nhìn về đối thủ cạnh tranh."}, love:{m:"Chịu đựng độc hại.", q:"Bạn hy sinh để cứu vãn, hay để tự trấn an?", x:"Hy sinh cho người không trân trọng là tự sát.", a:"Ngừng làm việc mà họ coi là đương nhiên."} },
+        13: { n:"Death", money:{m:"Cái xác dự án.", q:"Thứ này đã chết, tại sao bạn vẫn cố bơm tiền?", x:"Không buông xác cũ, không thể đón mầm non.", a:"Chấm dứt ngay một việc không hiệu quả."}, love:{m:"Níu kéo bóng ma.", q:"Người đã đi, hoặc lòng đã cạn. Bạn giữ gì?", x:"Kết thúc là sự tử tế duy nhất còn lại.", a:"Dứt khoát rời đi hoặc xóa liên lạc."} },
+        14: { n:"Temperance", money:{m:"Mất cân bằng đầu tư.", q:"Bạn đang ổn định dòng tiền, hay đang tất tay?", x:"Dòng tiền quan trọng hơn lợi nhuận đột biến.", a:"Điều chỉnh tỷ trọng đầu tư an toàn hơn."}, love:{m:"Ép buộc hòa hợp.", q:"Bạn có đang ép đối phương phải giống hệt mình?", x:"Tình yêu là pha trộn, không phải hòa tan.", a:"Lắng nghe họ lâu hơn thường ngày 15 phút."} },
+        15: { n:"The Devil", money:{m:"Nô lệ ham muốn.", q:"Bạn nợ do hoàn cảnh, hay do sự phù phiếm?", x:"Sợi xích này do chính tay bạn khóa vào chân.", a:"Xóa ngay một ứng dụng mua sắm tốn kém."}, love:{m:"Lệ thuộc độc hại.", q:"Bạn cần họ, hay bạn nghiện cảm giác có họ?", x:"Sự lệ thuộc là nhà tù, không phải tình yêu.", a:"Dành 1 ngày một mình tìm lại bản thân."} },
+        16: { n:"The Tower", money:{m:"Sụp đổ ảo tưởng.", q:"Nếu mất tất cả hôm nay, bạn còn lại năng lực gì?", x:"Tháp đổ để bạn thấy lại bầu trời thực tế.", a:"Viết phương án nếu thu nhập bằng 0."}, love:{m:"Tan vỡ định kiến.", q:"Cú sốc này giúp tỉnh ngộ hay khiến bạn gục ngã?", x:"Đừng níu công trình vốn đã mục nát.", a:"Đối mặt sự thật cay đắng nhất về đối phương."} },
+        17: { n:"The Star", money:{m:"Hy vọng hão huyền.", q:"Bạn đang lập kế hoạch, hay đang mơ mộng?", x:"Hy vọng là món tráng miệng, hành động là món chính.", a:"Lập bảng số liệu mục tiêu cụ thể 6 tháng."}, love:{m:"Lý tưởng hóa đối phương.", q:"Bạn yêu họ, hay yêu hình mẫu bạn tự vẽ?", x:"Đừng ép người thường phải làm thiên thần.", a:"Chấp nhận 1 khuyết điểm lớn của người yêu."} },
+        18: { n:"The Moon", money:{m:"Đi trong sương mù.", q:"Bạn hiểu rõ cuộc chơi, hay đang nghe đồn thổi?", x:"Trong bóng tối, kẻ nhìn thấy sự thật là kẻ thắng.", a:"Kiểm chứng lại mọi thông tin từ nguồn độc lập."}, love:{m:"Bất an cũ kỹ.", q:"Nỗi sợ này từ họ, hay từ vết sẹo cũ của bạn?", x:"Nghi ngờ vô căn cứ là thuốc độc tình cảm.", a:"Hỏi trực tiếp điều thắc mắc, đừng đoán."} },
+        19: { n:"The Sun", money:{m:"Thành công kiêu ngạo.", q:"Bạn sẽ làm gì để không bị tiền bạc làm tha hóa?", x:"Ánh sáng rực rỡ nhất cũng là lúc bóng ngắn nhất.", a:"Trích lợi nhuận giúp đỡ người khác."}, love:{m:"Hạnh phúc phô trương.", q:"Bạn thực sự vui, hay chỉ đang diễn cho người xem?", x:"Sự ấm áp thật sự không cần khoe khoang.", a:"Dành tối trọn vẹn bên người thân, tắt mạng."} },
+        20: { n:"Judgement", money:{m:"Phán quyết cuối.", q:"Bạn sẵn sàng chịu trách nhiệm cho sai lầm cũ?", x:"Lời xin lỗi muộn vẫn tốt hơn sự hèn nhát.", a:"Thanh toán một lời hứa hoặc nợ đã quá hạn."}, love:{m:"Thức tỉnh muộn.", q:"Bạn đã thực sự tha thứ cho họ và chính mình?", x:"Phán xét người khác là cách tự cầm tù mình.", a:"Viết thư tha thứ cho quá khứ."} },
+        21: { n:"The World", money:{m:"Đỉnh núi ảo.", q:"Hoàn thành cái này xong, mục tiêu tiếp theo là gì?", x:"Điểm dừng là khởi đầu cho hành trình mới.", a:"Tổng kết bài học lớn nhất trong dự án vừa qua."}, love:{m:"Viên mãn giả tạo.", q:"Bạn tìm thấy sự bình yên bên trong mình chưa?", x:"Thế giới trọn vẹn nhất là khi không cần ai để đủ.", a:"Tự thưởng cho mình 1 ngày bình yên."} }
+    };
+
+    let selectedCards = [], currentStep = 0, userAnswers = [], userActions = [];
+
+    window.onload = function() {
+        const lastSession = localStorage.getItem("namhai_last_session");
+        if(lastSession) {
+            const data = JSON.parse(lastSession);
+            document.getElementById("welcome-title").innerText = "ĐỐI DIỆN SỰ THẬT, " + data.name.toUpperCase();
+            document.getElementById("welcome-sub-box").innerHTML = `
+                <p style="color: #ff6666; font-size: 13px; font-weight: bold; margin: 5px 0;">Bạn vẫn đang mắc kẹt tại: "${data.lastIssue}"</p>
+                <p class="sub">Vòng lặp cũ vẫn còn đó. Bạn chọn bước ra hay tiếp tục lún sâu?</p>`;
+        }
+    };
+
+    function initDraw() {
+        // RESET TRẠNG THÁI TRIỆT ĐỂ
+        selectedCards = [];
+        currentStep = 0;
+        userAnswers = [];
+        userActions = [];
+        
+        const name = document.getElementById("userName").value.trim();
+        const story = document.getElementById("userStory").value.trim();
+        if (!name || story.length < 10) return alert("Sự thật cần sự thành tâm giãi bày (tối thiểu 10 ký tự).");
+        
+        document.getElementById("setup-zone").classList.add("hidden");
+        document.getElementById("finalZone").classList.add("hidden");
+        
+        let allKeys = Object.keys(tarotData).map(Number);
+        while(selectedCards.length < 5) {
+            let r = allKeys[Math.floor(Math.random()*allKeys.length)];
+            if(!selectedCards.includes(r)) selectedCards.push(r);
+        }
+        showCard();
+    }
+
+    function showCard() {
+        const topic = document.getElementById("mainTopic").value;
+        const cardId = selectedCards[currentStep];
+        const card = tarotData[cardId];
+        const data = card[topic];
+        const steps = ["GỐC RỄ", "HIỆN TẠI", "NÚT THẮT", "HÀNH ĐỘNG", "KẾT QUẢ"];
+        
+        document.getElementById("drawZone").innerHTML = `
+            <div class="result-card">
+                <small style="color:var(--gold)">BƯỚC ${currentStep + 1}: ${steps[currentStep]}</small>
+                <img src="https://www.sacred-texts.com/tarot/pkt/img/ar${cardId < 10 ? '0'+cardId : cardId}.jpg" class="card-img">
+                <p style="text-align:center;font-weight:bold;color:gold;margin:5px 0;">${card.n}</p>
+                <p style="font-size: 15px; margin-bottom:15px;"><b>Tiên sinh:</b> ${data.m}</p>
+                <div class="reflection-box">
+                    <span style="color:#00ffcc;font-style:italic;display:block;margin-bottom:8px;"><b>Truy vấn:</b> ${data.q}</span>
+                    <textarea id="ans_${currentStep}" placeholder="Hãy trung thực với chính mình..."></textarea>
+                </div>
+                <div id="pierce_${currentStep}" class="hidden"></div>
+                <button id="btn_${currentStep}" onclick="pierceStep()" style="margin-top:15px;">XÁC NHẬN SỰ THẬT</button>
+            </div>`;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function pierceStep() {
+        const inputArea = document.getElementById(`ans_${currentStep}`);
+        let val = inputArea.value.trim();
+        if(val.length < 5) return alert("Bạn đang né tránh. Hãy gõ thật lòng câu trả lời.");
+        
+        inputArea.disabled = true;
+        inputArea.style.opacity = "0.6";
+        
+        const topic = document.getElementById("mainTopic").value;
+        const cardData = tarotData[selectedCards[currentStep]][topic];
+        userAnswers.push(val);
+        
+        // MULTI-TRIGGER NÂNG CAO (AI GIẢ)
+        let dynamicAct = cardData.a || "Dành 10 phút nhìn thẳng vào vấn đề.";
+        const lowVal = val.toLowerCase();
+        if(lowVal.includes("sợ")) dynamicAct += " -> Hãy đối diện với nỗi sợ này thay vì chạy trốn.";
+        if(lowVal.includes("mệt")) dynamicAct += " -> Bạn đang kiệt sức, hãy nghỉ ngơi trước khi quyết định.";
+        if(lowVal.includes("tiền")) dynamicAct += " -> Nhìn lại mối quan hệ của bạn với vật chất.";
+        if(lowVal.includes("họ") || lowVal.includes("người đó")) dynamicAct += " -> Bạn đang phụ thuộc vào người khác quá nhiều.";
+        
+        userActions.push(dynamicAct);
+
+        const pZone = document.getElementById(`pierce_${currentStep}`);
+        pZone.innerHTML = `<div class="pierce-box"><p style="color:gold; font-weight:bold; margin:0 0 5px 0;">🔥 SỰ THẬT ĐỐI DIỆN:</p><p style="margin:0; font-size:14px; line-height:1.4;">${cardData.x}</p></div>`;
+        pZone.classList.remove("hidden");
+        
+        const btn = document.getElementById(`btn_${currentStep}`);
+        btn.innerText = (currentStep < 4) ? "TIẾP TỤC ĐÀO SÂU" : "PHÂN TÍCH TỔNG THỂ...";
+        btn.onclick = function() {
+            currentStep++;
+            if(currentStep < 5) showCard(); 
+            else {
+                document.getElementById("drawZone").innerHTML = "<p class='loading-text'>Hệ thống đang giải mã tâm trí bạn...</p>";
+                setTimeout(() => finalize(), 1200);
+            }
+        };
+    }
+
+    function finalize() {
+        document.getElementById("drawZone").innerHTML = "";
+        document.getElementById("finalZone").classList.remove("hidden");
+        
+        let longestAns = userAnswers.reduce((a, b) => a.length > b.length ? a : b);
+        // Highlight cụm từ chính (Giả định lấy 3 từ đầu)
+        let highlight = longestAns.split(' ').slice(0, 3).join(' ');
+        
+        let allText = userAnswers.join(" ").toLowerCase();
+        let s = `LỘ TRÌNH TÂM TRÍ CỦA BẠN:\n\n`;
+        
+        if(allText.includes("không biết")) s += "⚠️ CẢNH BÁO: Bạn dùng 'không biết' như một tấm khiên để né tránh thực tại.\n";
+        
+        s += `🔥 ĐIỂM TỬ HUYỆT: <span style="color:gold; font-weight:bold;">"${longestAns}"</span>\n\n`;
+        s += `📍 KẾT CỤC: Nếu không thay đổi hành động, tương lai của bạn sẽ là sự lặp lại của lá "${tarotData[selectedCards[4]][document.getElementById("mainTopic").value].m}"\n`;
+        s += `\n❗ Nếu bạn không hành động trong 24h tới, mọi nhận thức này sẽ biến mất.`;
+
+        document.getElementById("final-analysis").innerHTML = s;
+
+        localStorage.setItem("namhai_last_session", JSON.stringify({
+            name: document.getElementById("userName").value,
+            lastIssue: longestAns.substring(0, 40) + "..."
+        }));
+    }
+
+    function staySame() {
+        document.getElementById("final-analysis").innerText = "Bạn không thất bại. Bạn chỉ đang chọn lặp lại thất bại cũ một cách có ý thức.";
+        document.getElementById("decision-fork").classList.add("hidden");
+    }
+
+    function changePath() {
+        document.getElementById("final-analysis").innerHTML = "<b>LỘ TRÌNH PHÁ VỠ VÒNG LẶP DÀNH RIÊNG CHO BẠN:</b>";
+        document.getElementById("decision-fork").classList.add("hidden");
+        document.getElementById("action-plan").classList.remove("hidden");
+        
+        const listZone = document.getElementById("action-list");
+        listZone.innerHTML = ""; // FIX BUG RENDER CŨ
+        
+        userActions.forEach((act, i) => {
+            let label = (i === userActions.length - 1) 
+                ? "🔥 HÀNH ĐỘNG QUYẾT ĐỊNH" 
+                : "🚀 Bước " + (i+1);
+            listZone.innerHTML += `
+            <p style="border-bottom:1px solid #222; padding-bottom:8px;">
+                <b>${label}:</b> ${act}
+            </p>`;
+        });
+
+        // MOMENT UPSELL (LÁ THỨ 6)
+        listZone.innerHTML += `
+            <div style="background: gold; color: black; padding: 12px; border-radius: 8px; margin-top: 15px; text-align: center; font-weight: bold; cursor: pointer; font-size:14px;">
+                MỞ KHÓA LÁ THỨ 6: THỜI ĐIỂM VÀNG (99k)
+            </div>`;
+    }
+</script>
+</body>
+</html>
